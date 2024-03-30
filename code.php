@@ -238,14 +238,149 @@ else{
     </script>";
 }
 
+// faculty-section
+
+if(isset($_POST['faclt_registerbtn'])){   
+    $emp_pic = $_FILES['emp_pic']['name'];
+    $username = $_POST['emp_username'];
+    $email = $_POST['emp_email'];
+    $password = $_POST['emp_password'];
+    $cpassword = $_POST['emp_cpassword'];
+
+    $email_query = "SELECT * FROM faculty WHERE emp_email='$email' ";
+    $email_query_run = mysqli_query($connection, $email_query);
+    if(mysqli_num_rows($email_query_run) > 0)
+    {
+        $_SESSION['status'] = "Email Already Taken. Please Try Another one.";
+        $_SESSION['status_code'] = "error";
+        header('Location: Faculty.php');  
+    }
+    else
+    {
+        if($password === $cpassword)
+        {
+            if(file_exists('faculty_img/'.$_FILES['emp_pic']['name'])) {
+                $store ='faculty_img/'.$_FILES['emp_pic']['name'];
+                $_SESSION['status'] = "IMG is already exists";
+                header('Location: Faculty.php');  
+            } else {
+                $query = "INSERT INTO faculty (emp_name,emp_email,emp_password,emp_picture) VALUES ('$username','$email','$password','$emp_pic')";
+                $query_run = mysqli_query($connection, $query);
+                
+                if($query_run) {
+                    move_uploaded_file($_FILES['emp_pic']['tmp_name'], 'faculty_img/' . $_FILES['emp_pic']['name']);
+                    $_SESSION['status'] = "Admin Profile Added";
+                    $_SESSION['status_code'] = "success";
+                    header('Location: Faculty.php');
+                } else {
+                    $_SESSION['status'] = "Admin Profile Not Added";
+                    $_SESSION['status_code'] = "error";
+                    header('Location: Faculty.php');  
+                }
+            }
+            
+        }
+        else 
+        {
+            $_SESSION['status'] = "Password and Confirm Password Does Not Match";
+            $_SESSION['status_code'] = "warning";
+            header('Location:  Faculty.php');  
+        }
+    }
+
+}
+
+if(isset($_POST['emp_updatebtn'])){
+    $id = $_POST['emp_id'];
+    $emp_pic = $_FILES['edit_emppic']['name'];
+    $username = $_POST['edit_empname'];
+    $email = $_POST['edit_empemail'];
+
+    $query = "UPDATE faculty SET emp_name='$username', emp_email='$email', emp_picture='$emp_pic' WHERE emp_id='$id'";
+    $query_run = mysqli_query($connection, $query);
+
+    if($query_run)
+    {
+        move_uploaded_file($_FILES['edit_emppic']['tmp_name'], 'faculty_img/' . $_FILES['edit_emppic']['name']);
+        $_SESSION['status'] = "Your Data is Updated";
+        $_SESSION['status_code'] = "success";
+        header('Location:  Faculty.php');  
+    }
+    else
+    {
+        $_SESSION['status'] = "Your Data is NOT Updated";
+        $_SESSION['status_code'] = "error";
+        header('Location:  Faculty.php'); 
+    }
+}
 
 
+if(isset($_POST['delete_empbtn'])){
+    $id = $_POST['delete_id'];
 
+    $query = "DELETE FROM faculty WHERE emp_id='$id' ";
+    $query_run = mysqli_query($connection, $query);
 
+    if($query_run)
+    {
+        $_SESSION['status'] = "Your Data is Deleted";
+        $_SESSION['status_code'] = "success";
+        header('Location: Faculty.php'); 
+    }
+    else
+    {
+        $_SESSION['status'] = "Your Data is NOT DELETED";       
+        $_SESSION['status_code'] = "error";
+        header('Location:  Faculty.php'); 
+    }    
+}
 
+//blog
 
+if(isset($_POST['blogadd_btn'])){   
 
+    $blog_pic = $_FILES['blog_pic']['name'];
+    $blog_title = $_POST['blog_title'];
+    $blog_name = $_POST['blog_name'];
+    $blog_des = $_POST['blog_des'];
+    
 
+    $query = "INSERT INTO blog (blog_img,blog_title,blog_name,blog_des) VALUES ('$blog_pic','$blog_title','$blog_name','$blog_des')";
+    $query_run = mysqli_query($connection, $query);
+    
+    if($query_run) {
+
+        move_uploaded_file($_FILES['blog_pic']['tmp_name'], 'blog_img/' . $_FILES['blog_pic']['name']);
+        $_SESSION['status'] = "blog Added";
+        $_SESSION['status_code'] = "success";
+        header('Location: blog_admin.php');
+    } else {
+        $_SESSION['status'] = " Not Added";
+        $_SESSION['status_code'] = "error";
+        header('Location: blog_admin.php');  
+    }
+
+}
+
+if(isset($_POST['delete_blogbtn'])){
+    $id = $_POST['delete_blog'];
+
+    $query = "DELETE FROM blog WHERE id='$id' ";
+    $query_run = mysqli_query($connection, $query);
+
+    if($query_run)
+    {
+        $_SESSION['status'] = "Your Data is Deleted";
+        $_SESSION['status_code'] = "success";
+        header('Location: blog_admin.php'); 
+    }
+    else
+    {
+        $_SESSION['status'] = "Your Data is NOT DELETED";       
+        $_SESSION['status_code'] = "error";
+        header('Location: blog_admin.php'); 
+    }    
+}
 
 
 
